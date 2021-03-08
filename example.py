@@ -24,6 +24,7 @@
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 import portfolioopt as pfopt
 
@@ -45,12 +46,52 @@ def print_portfolio_info(returns, avg_rets, weights):
     print("Expected variance: {}".format(std**2))
     print("Expected Sharpe:   {}".format(sharpe))
 
+def load_data():
+    date_name = 'trade_date' # trade_date or Date
+    price_name = 'pct_chg'  # pct_chg or pct_change
+    re = np.zeros((178, 5))
+    cur_stock = pd.read_csv('./data/1.csv', encoding='gbk', parse_dates=[date_name])
+    cur_stock = cur_stock[cur_stock[date_name] >= pd.to_datetime('2020-03-01')]
+    cur_stock = cur_stock.reset_index(drop=True)  # 重排序
+    re[:,0] = cur_stock[price_name].to_numpy()
+    cur_stock = pd.read_csv('./data/2.csv', encoding='gbk', parse_dates=[date_name])
+    cur_stock = cur_stock[cur_stock[date_name] >= pd.to_datetime('2020-03-01')]
+    cur_stock = cur_stock.reset_index(drop=True)
+    re[:,1] = cur_stock[price_name].to_numpy()
+    cur_stock = pd.read_csv('./data/3.csv', encoding='gbk', parse_dates=[date_name])
+    cur_stock = cur_stock[cur_stock[date_name] >= pd.to_datetime('2020-03-01')]
+    cur_stock = cur_stock.reset_index(drop=True)
+    re[:,2] = cur_stock[price_name].to_numpy()
+    cur_stock = pd.read_csv('./data/4.csv', encoding='gbk', parse_dates=[date_name])
+    cur_stock = cur_stock[cur_stock[date_name] >= pd.to_datetime('2020-03-01')]
+    cur_stock = cur_stock.reset_index(drop=True)
+    re[:,3] = cur_stock[price_name].to_numpy()
+    cur_stock = pd.read_csv('./data/5.csv', encoding='gbk', parse_dates=[date_name])
+    cur_stock = cur_stock[cur_stock[date_name] >= pd.to_datetime('2020-03-01')]
+    cur_stock = cur_stock.reset_index(drop=True)
+    re[:,4] = cur_stock[price_name].to_numpy()
+
+    dates = cur_stock[date_name]
+    assets = ['asset_a', 'asset_b', 'asset_c', 'asset_d', 'asset_e']
+    returns = pd.DataFrame(re, columns=assets, index=dates)
+    avg_rets = returns.mean()
+    cov_mat = returns.cov()  
+    return returns, cov_mat, avg_rets
 
 def main():
-    returns, cov_mat, avg_rets = pfopt.create_test_data()
-    
+
+    # returns, cov_mat, avg_rets = pfopt.create_test_data(num_days=1000)
+    returns, cov_mat, avg_rets = load_data()
+    # yy = returns['asset_a']
+    # xx = [ii for ii in range(len(yy))]
+    # plt.plot(xx, yy)
+    # plt.hlines(avg_rets[0], xmin=0, xmax=100, colors='black')
+    # plt.show()
+
+    # return 0
+
     section("Example returns")
-    print(returns.head(10))
+    print(returns.head(5))
     print("...")
 
     section("Average returns")
